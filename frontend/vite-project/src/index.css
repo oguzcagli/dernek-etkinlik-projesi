@@ -1,0 +1,143 @@
+/* src/index.css */
+
+/* Global arka plan - tamamen siyah */
+html,
+body {
+  background-color: #121212 !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Root container da siyah */
+#root {
+  background-color: #121212;
+  min-height: 100vh;
+}
+
+/* Container ve main elementler için siyah arka plan */
+.MuiContainer-root {
+  background-color: #121212;
+}
+
+/* Kart genel stili */
+.card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  background-color: #1e1e1e;
+  /* Koyu tema için kart arka planı */
+  color: #ffffff;
+  /* Metin rengi beyaz */
+}
+
+/* Hover'da büyüme efekti */
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Kart içi resim: genişliğe uy, sabit yükseklikte kırp */
+.card-img {
+  display: block;
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+/* Kartın gövde kısmı */
+.card-body {
+  padding: 12px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+/* "Devamını Oku" butonu */
+.card-body .btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #90caf9;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.card-body .btn:hover {
+  background-color: #64b5f6;
+}
+
+/* Slick slider için koyu tema */
+.slick-dots li button:before {
+  color: #ffffff !important;
+  opacity: 0.5;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #90caf9 !important;
+  opacity: 1;
+}
+
+/* Slick arrow'lar için koyu tema */
+.slick-prev:before,
+.slick-next:before {
+  color: #ffffff !important;
+}
+
+/* Material-UI Paper elementleri için koyu tema */
+.MuiPaper-root {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+}
+
+/* Dialog için koyu tema */
+.MuiDialog-paper {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+}
+
+/* TextField için koyu tema */
+.MuiTextField-root {
+  background-color: #1e1e1e;
+}
+
+.MuiOutlinedInput-root {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: #555555;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #90caf9;
+}
+
+/* Herhangi bir beyaz arka plan kalan element için */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #555555 #121212;
+}
+
+/* Webkit scrollbar için */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777777;
+}
