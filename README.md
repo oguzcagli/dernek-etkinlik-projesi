@@ -80,6 +80,7 @@ Kurulum
 Depoları klonlayın:
 
 git clone https://github.com/oguzcagli/dernek-etkinlik-projesi.git
+
 cd dernek-etkinlik-projesi
 
 ## Docker ile PostgreSQL ve Redis’i ayağa kaldırın:
@@ -89,15 +90,18 @@ docker-compose up -d
 # Backend:
 
 cd backend\etkinlik-yonetimi
+
 ./mvnw spring-boot:run
 
 # Frontend:
 
 cd frontend\vite-project
+
 npm install
+
 npm run dev
 
-## Kullanım
+# Kullanım
 
 # Admin:
 
