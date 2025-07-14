@@ -108,6 +108,7 @@ npm run dev
 Giriş: /admin → 
 
 Kullanıcı adı: admin
+
 Şifre: dernek123
 
 Haberler: /admin/haberler
@@ -119,18 +120,6 @@ Duyurular: /admin/duyurular
 Haberler: /haberler
 
 Duyurular: /duyurular
-
-Proje Yapısı
-
-├── backend/
-│   ├── src/main/java/...   # Spring Boot uygulaması
-│   ├── application.properties
-│   └── Dockerfile
-├── frontend/
-│   ├── src/               # React uygulaması
-│   ├── public/
-│   └── vite.config.ts
-└── docker-compose.yml
 
 ## Çevresel Değişkenler
 
