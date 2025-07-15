@@ -1,27 +1,38 @@
-version: "3.8"
-
 services:
-  postgres:
-    image: postgres:15
+  dernek-postgres:
+    image: postgres:latest
+    container_name: dernek-postgres-compose
     restart: always
     environment:
-      # application.properties’e paralel
       POSTGRES_DB: dernek_db
       POSTGRES_USER: dernek_user
       POSTGRES_PASSWORD: dernek123
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - C:\docker-data\postgres:/var/lib/postgresql/data
+    networks:
+      - dernek-network
 
-  redis:
-    image: redis:7
+  redis-server:
+    image: redis:latest
+    container_name: redis-server-compose
     restart: always
+    environment:
+      REDIS_PASSWORD: mypassword123
+      REDIS_ARGS: --appendonly yes
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks:
+      - dernek-network
 
 volumes:
-  postgres_data:
-  redis_data:
+  redis-data:
+    external: true
+
+networks:
+  dernek-network:
+    driver: bridge
