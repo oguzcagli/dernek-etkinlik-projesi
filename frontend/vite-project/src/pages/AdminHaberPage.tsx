@@ -80,7 +80,7 @@ const kategoriler = [
   { id: 2, ad: "Spor" },
   { id: 3, ad: "Kültür" },
   { id: 4, ad: "Eğitim" },
-  { id: 5, ad: "Sağlık" },
+  { id: 5, ad: "Teknoloji" },
 ];
 
 export function AdminHaberPage() {
