@@ -156,8 +156,8 @@ Git
 <summary><b> Projeyi Klonlayın</b></summary>
 
 ```bash
-git clone <repository-url>
-cd DERNEK-ETKINLIK-YONETIMI
+git clone https://github.com/oguzcagli/dernek-etkinlik-projesi.git
+cd dernek-etkinlik-yonetimi
 ```
 
 </details>
