@@ -1,30 +1,3 @@
-## 🧪 Test Verisi
-
-<div align="center">
-<table>
-<tr>
-<th> Kategoriler</th>
-<th> Sample Data</th>
-</tr>
-<tr>
-<td>
-
-1. **Genel** - Genel haberler
-2. **Spor** - Spor haberleri  
-3. **Kültür** - Kültürel etkinlikler
-4. **Eğitim** - Eğitim haberleri
-5. **Teknoloji** - Teknoloji haberleri
-
-</td>
-<td>
-
-- **3 örnek haber** (farklı kategorilerde)
-- **2 örnek duyuru** (resimli ve resimsiz)
-
-</td>
-</tr>
-</table>
-</div>
 
 ##  Proje Özeti
 
@@ -36,7 +9,7 @@
 <tr>
 <td valign="top" width="33%">
 
-### 🔧 Backend
+### Backend
 - **Java 17**
 - **Spring Boot 3.1.0**
 - **Spring Data JPA / Hibernate**
@@ -71,7 +44,7 @@
 ##  Ana Özellikler
 
 <details>
-<summary><b>👤 Kullanıcı Özellikleri</b></summary>
+<summary><b> Kullanıcı Özellikleri</b></summary>
 
 -  Haberler listeleme ve detay görüntüleme
 -  Duyurular listeleme ve detay görüntüleme  
@@ -359,8 +332,6 @@ DELETE /api/duyurular/admin/{id}        # Duyuru sil
 
 <div align="center">
 
-### Component Library
-**Material-UI Cards** • **Slick Carousel** • **MUI Dialogs** • **Snackbar** • **Fab Button**
 
 </div>
 
@@ -439,17 +410,6 @@ DERNEK-ETKINLIK-YONETIMI/
 
 ##  Katkıda Bulunma
 
-<div align="center">
-
-```mermaid
-graph LR
-    A[ Fork] --> B[ Feature Branch]
-    B --> C[ Commit]
-    C --> D[ Push]
-    D --> E[ Pull Request]
-```
-
-</div>
 
 1. **Fork'layın** - Projeyi kendi hesabınıza fork'layın
 2. **Feature branch** - `git checkout -b feature/AmazingFeature`
