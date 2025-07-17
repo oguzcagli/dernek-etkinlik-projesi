@@ -145,6 +145,7 @@ Etkinlik (Base)
 ```bash
 Java 17+
 Node.js 18+
+Maven
 Docker & Docker Compose
 Git
 ```
