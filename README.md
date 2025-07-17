@@ -1,136 +1,331 @@
-# dernek-etkinlik-projesi
-Dernek Etkinlik Yönetimi” projesi, Spring Boot + Hibernate tabanlı bir backend ile React + TypeScript frontend’i bir araya getirir. PostgreSQL ve Redis önbellekleme kullanılan uygulama, Haberler ve Duyuruların admin paneli üzerinden CRUD işlemlerini; kullanıcı tarafında listeleme, detay görüntüleme ve arama özelliklerini destekler.
+Dernek Etkinlik Yönetim Sistemi
+Bu proje, bir dernek için haber ve duyuru yönetim sistemi olarak geliştirilmiş tam stack web uygulamasıdır. Modern teknolojiler kullanılarak Single Table Inheritance pattern ile tasarlanmıştır.
+📋 Proje Özeti
+Dernek üyeleri için haber ve duyuru paylaşım platformu. Admin paneli üzerinden içerik yönetimi, kullanıcı dostu arayüz ile içerik görüntüleme ve arama funktionalitesi sunmaktadır.
+🏗️ Teknoloji Stack
+Backend
 
-# Dernek Etkinlik Yönetimi
+Java 17
+Spring Boot 3.1.0
+Spring Data JPA / Hibernate
+PostgreSQL 15
+Redis (Cache)
+Maven (Dependency Management)
+Lombok (Code Generation)
 
-Bu proje, bir derneğin web sitesi için Haberler ve Duyurular modüllerini içeren tam yığın (full-stack) bir uygulamadır.
+Frontend
 
-## Özellikler
+React 18 + TypeScript
+Vite (Build Tool)
+Material-UI (MUI)
+React Router DOM
+Slick Carousel
+Context API (State Management)
 
-Admin Panel
+DevOps & Database
 
-Haberler: Oluşturma, güncelleme, silme (CRUD) + resim yükleme
+Docker & Docker Compose
+PostgreSQL (Ana Veritabanı)
+Redis (Cache Layer)
 
-Duyurular: Oluşturma, güncelleme, silme (CRUD) + resim yükleme
+🎯 Ana Özellikler
+Kullanıcı Özellikleri
 
-Rol tabanlı erişim (admin)
+✅ Haberler listeleme ve detay görüntüleme
+✅ Duyurular listeleme ve detay görüntüleme
+✅ Gelişmiş arama functionalitesi
+✅ Responsive (mobil uyumlu) tasarım
+✅ Modern carousel slider
+✅ Popülerlik tabanlı sorting
+✅ Real-time image loading
 
-# Kullanıcı Arayüzü
+Admin Panel Özellikleri
 
-- Haberler: Listeleme, detay görüntüleme, arama, son eklenen ve popüler slider
+🔐 Güvenli admin girişi (admin/dernek123)
+➕ CRUD Operasyonları: Oluştur, Oku, Güncelle, Sil
+🖼️ Resim yükleme desteği (preview ile)
+📅 Zamanlanmış yayınlama
+🏷️ Kategori yönetimi (Haberler için)
+📊 İstatistik görüntüleme
+🎨 Dark theme admin paneli
 
-- Duyurular: Listeleme, detay modal
+Teknik Özellikler
 
-# Backend
+🏛️ Single Table Inheritance pattern
+🗄️ Redis Cache entegrasyonu
+📱 Responsive Design (xs, sm, md, lg breakpoints)
+🔍 Global search functionality
+🛡️ Input validation ve error handling
+📦 File upload sistemi
+🔄 Real-time updates
+💾 LocalStorage integration (popularite tracking)
 
-- Java + Spring Boot + Hibernate
+📊 Veritabanı Tasarımı
+Single Table Inheritance Yapısı
+sql-- Etkinlikler tablosu (Base entity)
+CREATE TABLE etkinlikler (
+    id BIGSERIAL PRIMARY KEY,
+    tur VARCHAR(31) NOT NULL, -- Discriminator (HABER/DUYURU)
+    konu VARCHAR(1000) NOT NULL,
+    icerik TEXT NOT NULL,
+    gecerlilik_tarihi TIMESTAMP,
+    resim_yolu VARCHAR(255),
+    kategori_id BIGINT,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    
+    -- Haber-specific fields
+    haber_linki VARCHAR(500),
+    
+    -- Duyuru-specific fields  
+    oncelik_seviyesi INTEGER DEFAULT 1,
+    hedef_grup VARCHAR(200),
+    
+    FOREIGN KEY (kategori_id) REFERENCES kategoriler(id)
+);
 
-- PostgreSQL veritabanı
+-- Kategoriler tablosu
+CREATE TABLE kategoriler (
+    id BIGSERIAL PRIMARY KEY,
+    ad VARCHAR(100) NOT NULL UNIQUE
+);
+Entity İlişkileri
+Etkinlik (Base)
+├── Haber extends Etkinlik
+│   ├── haberLinki: String
+│   └── kategori: ManyToOne → Kategori
+└── Duyuru extends Etkinlik
+    ├── oncelikSeviyesi: Integer
+    └── hedefGrup: String
+🚀 Kurulum ve Çalıştırma
+Ön Gereksinimler
 
-- Redis önbellekleme (@Cacheable, manuel cache)
+Java 17+
+Node.js 18+
+Docker & Docker Compose
+Git
 
-- Dosya sistemi tabanlı resim yükleme
-
-- Global exception handling ve validation
-
-- Tek tablo inheritance (Etkinlik base entity)
-
-# Frontend
-
-- React + TypeScript
-
-- Material-UI (MUI) dark theme
-
-- React Router v6
-
-- Fetch API wrapper
-
-- FormData ile resim upload
-
-- Context API tabanlı authentication
-
-# Backend:
-
-- Java 17
-
-- Spring Boot 3.1.0
-
-- Spring Data JPA (Hibernate)
-
-- PostgreSQL
-
-- Redis
-
-- Lombok
-
-# Frontend:
-
-- React 18
-
-- TypeScript
-
-- Material-UI (MUI)
-
-- React Router
-
-- Slick Carousel
-
-Kurulum
-
-Depoları klonlayın:
-
-git clone https://github.com/oguzcagli/dernek-etkinlik-projesi.git
-
-cd dernek-etkinlik-projesi
-
-## Docker ile PostgreSQL ve Redis’i ayağa kaldırın:
-
+1. Projeyi Klonlayın
+bashgit clone <repository-url>
+cd DERNEK-ETKINLIK-YONETIMI
+2. Docker Servisleri Başlatın
+bash# PostgreSQL ve Redis'i başlat
 docker-compose up -d
 
-# Backend:
+# Servis durumunu kontrol et
+docker-compose ps
+3. Backend'i Çalıştırın
+bashcd backend/etkinlik-yonetimi
 
-cd backend\etkinlik-yonetimi
+# Maven dependencies'i indir
+./mvnw clean install
 
+# Spring Boot uygulamasını başlat
 ./mvnw spring-boot:run
+Backend şu adreste çalışacak: http://localhost:8080
+4. Frontend'i Çalıştırın
+bashcd frontend/vite-project
 
-# Frontend:
-
-cd frontend\vite-project
-
+# NPM dependencies'i indir
 npm install
 
+# Development server'ı başlat
 npm run dev
+Frontend şu adreste çalışacak: http://localhost:5173
+🔧 Konfigürasyon
+Backend Konfigürasyonu (application.properties)
+properties# Database
+spring.datasource.url=jdbc:postgresql://localhost:5433/dernek_db
+spring.datasource.username=dernek_user
+spring.datasource.password=dernek123
 
-# Kullanım
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 
-# Admin:
+# Redis Cache
+spring.cache.type=redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
 
-Giriş: /admin → 
+# File Upload
+spring.servlet.multipart.max-file-size=10MB
+file.upload-dir=uploads
+Frontend Konfigürasyonu
+typescript// API Base URL
+const BASE_URL = "http://localhost:8080/api";
 
-Kullanıcı adı: admin
+// Admin Credentials
+const ADMIN_CREDENTIALS = {
+    username: "admin",
+    password: "dernek123"
+};
+📚 API Endpoints
+Haber Endpoints
+http# Public Endpoints
+GET    /api/haberler                    # Aktif haberleri listele
+GET    /api/haberler/{id}               # Tek haber detayı
+GET    /api/haberler/search?konu=query  # Haber arama
 
-Şifre: dernek123
+# Admin Endpoints  
+GET    /api/haberler/admin              # Tüm haberler (admin)
+POST   /api/haberler/admin              # Yeni haber oluştur
+POST   /api/haberler/admin/with-image   # Resimli haber oluştur
+PUT    /api/haberler/admin/{id}         # Haber güncelle
+PUT    /api/haberler/admin/{id}/with-image # Resimli haber güncelle
+DELETE /api/haberler/admin/{id}         # Haber sil
+Duyuru Endpoints
+http# Public Endpoints
+GET    /api/duyurular                   # Aktif duyuruları listele  
+GET    /api/duyurular/{id}              # Tek duyuru detayı
+GET    /api/duyurular/search?konu=query # Duyuru arama
 
-Haberler: /admin/haberler
+# Admin Endpoints
+GET    /api/duyurular/admin             # Tüm duyurular (admin)
+POST   /api/duyurular/admin             # Yeni duyuru oluştur
+POST   /api/duyurular/admin/with-image  # Resimli duyuru oluştur  
+PUT    /api/duyurular/admin/{id}        # Duyuru güncelle
+PUT    /api/duyurular/admin/{id}/with-image # Resimli duyuru güncelle
+DELETE /api/duyurular/admin/{id}        # Duyuru sil
+🎨 UI/UX Özellikleri
+Renk Paleti
 
-Duyurular: /admin/duyurular
+Primary: #b5a174 (Altın/Bronz)
+Secondary: #d4c49a (Açık Altın)
+Background: #121212 (Koyu Siyah)
+Paper: #1e1e1e (Koyu Gri)
+Text: #ffffff / #b0b0b0
 
-# Kullanıcı:
+Responsive Breakpoints
 
-Haberler: /haberler
+xs: 0px+ (Mobile)
+sm: 600px+ (Tablet)
+md: 900px+ (Desktop)
+lg: 1200px+ (Large Desktop)
 
-Duyurular: /duyurular
+Component Library
 
-## Çevresel Değişkenler
+Material-UI Cards - İçerik gösterimi
+Slick Carousel - Hero slider
+MUI Dialogs - Modal popups
+Snackbar - Toast notifications
+Fab Button - Floating action button
 
-spring.datasource.* (PostgreSQL bağlantısı)
+🔒 Güvenlik
+Authentication
 
-spring.data.redis.* (Redis ayarları)
+Role-based access control
+Protected routes (admin paneli)
+LocalStorage session management
+CORS configuration
 
-file.upload-dir (Dosya yükleme dizini)
+Admin Panel Erişimi
+Username: admin
+Password: dernek123
+⚠️ Not: Production'da bu bilgiler environment variables'dan alınmalıdır.
+📁 Proje Yapısı
+DERNEK-ETKINLIK-YONETIMI/
+│
+├── backend/etkinlik-yonetimi/          # Spring Boot Backend
+│   ├── src/main/java/com/dernek/etkinlik_yonetimi/
+│   │   ├── config/                     # Redis, Static File Config
+│   │   ├── controller/                 # REST Controllers
+│   │   ├── dto/                        # Request/Response DTOs
+│   │   ├── entity/                     # JPA Entities
+│   │   ├── exception/                  # Global Exception Handler
+│   │   ├── mapper/                     # Entity-DTO Mappers
+│   │   ├── repository/                 # JPA Repositories
+│   │   ├── service/                    # Business Logic
+│   │   └── EtkinlikYonetimiApplication.java
+│   ├── src/main/resources/
+│   │   ├── application.properties      # Configuration
+│   │   └── data.sql                    # Initial Data
+│   └── pom.xml                        # Maven Dependencies
+│
+├── frontend/vite-project/              # React Frontend
+│   ├── src/
+│   │   ├── api/                       # API Service Functions
+│   │   ├── auth/                      # Authentication Context
+│   │   ├── components/                # Reusable Components
+│   │   ├── models/                    # TypeScript Interfaces
+│   │   ├── pages/                     # Page Components
+│   │   ├── assets/                    # Static Assets
+│   │   ├── App.tsx                    # Main App Component
+│   │   └── main.tsx                   # Entry Point
+│   ├── package.json                   # NPM Dependencies
+│   └── vite.config.ts                 # Vite Configuration
+│
+├── init-db/                           # Database Initialization
+│   └── 01-init.sql                    # Database Setup Script
+│
+├── uploads/                           # File Upload Directory
+├── docker-compose.yml                 # Docker Services
+└── README.md                          # Documentation
+🧪 Test Verisi
+Sistem başlatıldığında aşağıdaki test verileri otomatik olarak eklenir:
+Kategoriler
 
+Genel - Genel haberler
+Spor - Spor haberleri
+Kültür - Kültürel etkinlikler
+Eğitim - Eğitim haberleri
+Teknoloji - Teknoloji haberleri
 
-Frontend: VITE_API_BASE_URL
+Sample Data
+
+3 örnek haber (farklı kategorilerde)
+2 örnek duyuru (resimli ve resimsiz)
+
+🚀 Deployment
+Production Build (Frontend)
+bashcd frontend/vite-project
+npm run build
+# Build dosyaları dist/ klasörüne oluşturulur
+Production Configuration
+Backend için production profili:
+properties# application-prod.properties
+spring.datasource.url=${DATABASE_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+🔧 Design Patterns Kullanılan
+
+Single Table Inheritance - Etkinlik base entity'si
+Repository Pattern - Data access layer
+DTO Pattern - Data transfer objects
+Mapper Pattern - Entity-DTO dönüşümleri
+Builder Pattern - ApiResponse construction
+Factory Pattern - Cache manager configuration
+Provider Pattern - React context (AuthProvider)
+
+📈 Performance Optimizations
+
+Redis Cache - Database sorgu cache'leme
+Image Optimization - Responsive image loading
+Lazy Loading - Component-based code splitting
+Pagination - Large dataset handling (ready for future)
+Compressed Assets - Optimized build output
+Database Indexes - Query performance optimization
+
+🐛 Bilinen Limitasyonlar
+
+File Storage: Dosyalar local filesystem'de saklanıyor (production'da cloud storage önerilir)
+Authentication: Basic authentication (JWT token tabanlı sistem önerilir)
+Pagination: Frontend'de henüz pagination yok (büyük veri setleri için gerekebilir)
+Email Notifications: Yeni içerik bildirimleri yok
+Image Compression: Yüklenen resimler otomatik sıkıştırılmıyor
+
+🤝 Katkıda Bulunma
+
+Fork'layın
+Feature branch oluşturun (git checkout -b feature/AmazingFeature)
+Commit'leyin (git commit -m 'Add some AmazingFeature')
+Push'layın (git push origin feature/AmazingFeature)
+Pull Request açın
 
 # GÖRÜNÜM AŞAĞIDAKİ GİBİ OLMALIDIR
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/5ef723dd-a5cf-4c91-92a1-568d33b03df5" />
