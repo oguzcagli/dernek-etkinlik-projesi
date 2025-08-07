@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Haber } from "../models/Haber";
+import { useWebSocket } from "../hooks/useWebSocket";
+import { useCallback } from "react";
 import { fetchHaberler, createHaberWithImage, updateHaberWithImage, deleteHaber } from "../api/haberApi";
 import {
   Box,
@@ -124,6 +126,29 @@ export function AdminHaberPage() {
       setLoading(false);
     }
   };
+
+  const loadHaberlerSilent = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/haberler/admin");
+      const apiResponse = await res.json();
+      const data = apiResponse.data || [];
+      console.log("WebSocket ile yenilenen data:" + data)
+      setHaberler(data);
+    } catch (error) {
+      console.error('Haberler yüklenirken hata:', error);
+      showSnackbar('Haberler yüklenirken hata oluştu', 'error');
+    }
+  };
+
+  const handleWebSocketMessage = useCallback(() => {
+
+    console.log("Websocket mesajı alındı Haberler yenileniyor");
+    setTimeout(() => {
+      loadHaberlerSilent();
+    }, 50);
+  }, []);
+
+  useWebSocket("haberler", handleWebSocketMessage);
 
   useEffect(() => {
     loadHaberler();

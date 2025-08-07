@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import type { Duyuru } from "../models/Duyuru";
 import { fetchAllDuyurular, createDuyuruWithImage, updateDuyuruWithImage, deleteDuyuru } from "../api/duyuruApi";
+import { useWebSocket } from "../hooks/useWebSocket";
 import {
   Box,
   Card,
@@ -106,6 +108,27 @@ export function AdminDuyuruPage() {
       setLoading(false);
     }
   };
+
+
+  const loadDuyurularSilent = async () => {
+
+    try {
+      const data = await fetchAllDuyurular();
+      console.log("WebSocket ile Duyurular Güncellendi", data.length);
+      setDuyurular(data);
+    } catch (err) {
+      console.error('Duyurular Güncellenemedi', err);
+    }
+  };
+
+  const handleWebSocketMessage = useCallback(() => {
+    console.log('WebSocket mesajı alındı - Duyurular Güncelleniyor...');
+    setTimeout(() => {
+      loadDuyurularSilent();
+    }, 500);
+  }, []);
+
+  useWebSocket('duyurular', handleWebSocketMessage);
 
   useEffect(() => {
     loadDuyurular();

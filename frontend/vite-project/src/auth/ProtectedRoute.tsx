@@ -9,10 +9,31 @@ interface Props {
 }
 
 export function ProtectedRoute({ children, requireAdmin }: Props) {
-    const { role } = useAuth();
+    const { role, isLoading } = useAuth();
 
-    if (requireAdmin && role !== "admin") {
+    // Yükleniyor durumunda
+    if (isLoading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh'
+            }}>
+                <div>Yükleniyor...</div>
+            </div>
+        );
+    }
+
+    // Giriş yapmamışsa login'e yönlendir
+    if (!role) {
         return <Navigate to="/admin/login" replace />;
     }
+
+    // Admin gerekli ama kullanıcı admin değilse
+    if (requireAdmin && role !== "ADMIN") {
+        return <Navigate to="/admin/login" replace />;
+    }
+
     return <>{children}</>;
 }

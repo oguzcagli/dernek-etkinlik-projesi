@@ -24,18 +24,22 @@ import com.dernek.etkinlik_yonetimi.entity.Haber;
 import com.dernek.etkinlik_yonetimi.mapper.HaberMapper;
 import com.dernek.etkinlik_yonetimi.repository.HaberRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class HaberService {
 
     @Autowired
     private HaberRepository haberRepository;
-
     @Autowired
     private HaberMapper haberMapper;
+
+    @Autowired
+    private WebSocketNotificationService notificationService;
 
     @Value("${file.upload-dir:uploads}")
     private String uploadDir;
@@ -103,6 +107,8 @@ public class HaberService {
         
         HaberResponseDto response = haberMapper.toResponseDto(haber);
         log.info(" Tekil haber response kategori: {}", response.getKategori());
+
+        
         
         return response;
     }
@@ -112,6 +118,7 @@ public class HaberService {
     public HaberResponseDto createHaber(CreateHaberDto createDto) {
         log.info(" Yeni haber oluşturuluyor: {}", createDto.getKonu());
         log.info(" Service'e gelen kategori (createHaber): {}", createDto.getKategori());
+
         
         Haber haber = haberMapper.toEntity(createDto);
         log.info(" Entity'deki kategori (createHaber): {}", haber.getKategori());
@@ -129,6 +136,8 @@ public class HaberService {
         
         HaberResponseDto response = haberMapper.toResponseDto(savedHaber);
         log.info(" Response'taki kategori (createHaber): {}", response.getKategori());
+
+        notificationService.notificationHaberUpdate();
         
         // Yayınlanma durumunu logla
         if (savedHaber.getGecerlilikTarihi().isAfter(LocalDateTime.now())) {
@@ -167,6 +176,8 @@ public class HaberService {
         
         HaberResponseDto response = haberMapper.toResponseDto(savedHaber);
         log.info(" Response'taki kategori (createHaberWithImage): {}", response.getKategori());
+
+        notificationService.notificationHaberUpdate();
         
         // Yayınlanma durumunu logla
         if (savedHaber.getGecerlilikTarihi().isAfter(LocalDateTime.now())) {
@@ -208,6 +219,8 @@ public class HaberService {
         
         log.info(" Haber güncellendi - Redis cache temizlendi");
 
+        notificationService.notificationHaberUpdate();
+
         return response;
     }
 
@@ -244,8 +257,9 @@ public class HaberService {
         
         HaberResponseDto response = haberMapper.toResponseDto(updatedHaber);
         log.info(" Resimli güncelleme response kategori: {}", response.getKategori());
-        
         log.info(" Resimli haber güncellendi - Redis cache temizlendi");
+
+        notificationService.notificationHaberUpdate();
 
         return response;
     }
@@ -260,6 +274,7 @@ public class HaberService {
             deleteOldImage(haber.getResimYolu());
             haberRepository.delete(haber);
             log.info(" Haber silindi - Redis cache temizlendi");
+            notificationService.notificationHaberUpdate();
         });
     }
 

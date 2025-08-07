@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useCallback } from "react";
+import { useWebSocket } from "../hooks/useWebSocket";
 import { useSearchParams } from "react-router-dom";
 import type { Haber } from "../models/Haber";
 import { fetchHaberler, searchHaberler } from "../api/haberApi";
@@ -171,6 +173,37 @@ export function HaberlerPage() {
 
     loadHaberler();
   }, [searchParams]);
+
+  const loadHaberlerSilent = async () => {
+
+    try {
+      const searchQuery = searchParams.get('q');
+      let data: Haber[];
+
+      if (searchQuery) {
+        data = await searchHaberler(searchQuery);
+      } else {
+        data = await fetchHaberler();
+      }
+
+      console.log("WebSocket ile haberler güncellendi", data.length);
+      setHaberler(data);
+    } catch (err) {
+      console.error('Haberler yüklenirken hata:', err);
+
+    }
+
+  }
+
+  const handleWebSocketMessage = useCallback(() => {
+    console.log('WebSocket mesajı alındı - Kullanıcı sayfası yenileniyor...');
+    setTimeout(() => {
+      loadHaberlerSilent();
+    }, 500);
+  }, [searchParams]);
+  useWebSocket('haberler', handleWebSocketMessage);
+
+
 
   useEffect(() => {
     if (mainRef.current && thumbRef.current) {

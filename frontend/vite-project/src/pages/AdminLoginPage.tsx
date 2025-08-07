@@ -52,7 +52,7 @@ export function AdminLoginPage() {
     const navigate = useNavigate();
 
     // Zaten giriş yapmışsa admin paneline yönlendir
-    if (role === "admin") {
+    if (role === "ADMIN") {
         return <Navigate to="/admin/haberler" replace />;
     }
 

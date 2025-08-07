@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/duyurular")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class DuyuruController {
     

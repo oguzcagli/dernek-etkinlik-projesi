@@ -34,6 +34,9 @@ public class DuyuruService {
     
     @Autowired
     private DuyuruMapper duyuruMapper;
+
+    @Autowired
+    private WebSocketNotificationService notificationService;
     
     @Value("${file.upload-dir:uploads}")
     private String uploadDir;
@@ -153,6 +156,8 @@ public class DuyuruService {
         clearCache();
         
         log.info(" Duyuru kaydedildi - Cache temizlendi");
+
+        notificationService.notificationDuyuruUpdate();
         
         return duyuruMapper.toResponseDto(savedDuyuru);
     }
@@ -176,6 +181,8 @@ public class DuyuruService {
         clearCache();
         
         log.info(" Resimli duyuru kaydedildi - Cache temizlendi");
+
+        notificationService.notificationDuyuruUpdate();
         
         return duyuruMapper.toResponseDto(savedDuyuru);
     }
@@ -196,6 +203,8 @@ public class DuyuruService {
         clearCache();
         
         log.info(" Duyuru güncellendi - Cache temizlendi");
+
+        notificationService.notificationDuyuruUpdate();
         
         return duyuruMapper.toResponseDto(updatedDuyuru);
     }
@@ -223,6 +232,8 @@ public class DuyuruService {
         clearCache();
         
         log.info(" Resimli duyuru güncellendi - Cache temizlendi");
+
+        notificationService.notificationDuyuruUpdate();
         
         return duyuruMapper.toResponseDto(updatedDuyuru);
     }
@@ -237,6 +248,8 @@ public class DuyuruService {
             
             // Cache'i temizle
             clearCache();
+            
+            notificationService.notificationDuyuruUpdate();
             
             log.info(" Duyuru silindi - Cache temizlendi");
         });

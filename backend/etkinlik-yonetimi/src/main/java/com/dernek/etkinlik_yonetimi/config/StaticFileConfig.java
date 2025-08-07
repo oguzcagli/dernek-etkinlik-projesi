@@ -13,9 +13,11 @@ public class StaticFileConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /uploads/** URL'lerini uploads/ dizinindeki dosyalara yönlendir
+
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/")
-                .setCachePeriod(0); // Cache'i devre dışı bırak (development için)
+                .setCachePeriod(0);
+                
+
     }
 }

@@ -138,7 +138,7 @@ function Nav() {
         >
           <b>DUYURULAR</b>
         </Button>
-        {role === "admin" && (
+        {role === "ADMIN" && (
           <>
             <Button
               component={Link}

@@ -12,37 +12,27 @@ interface ApiResponse<T> {
   timestamp: string;
 }
 
-//  Aktif duyuruları getir (kullanıcı ekranı için)
-export async function fetchDuyurular(): Promise<Duyuru[]> {
+// Token'ı localStorage'dan al ve header oluştur
+const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('dernek_auth_token');
+  if (token) {
+    return { 'Authorization': `Bearer ${token}` };
+  }
+  return {};
+};
+
+// Herkese açık - token gerektirmez
+export async function fetchAllDuyurular(): Promise<Duyuru[]> {
   const res = await fetch(BASE_URL);
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
   const apiResponse: ApiResponse<Duyuru[]> = await res.json();
-  console.log("Aktif duyurular:", JSON.stringify(apiResponse.data, null, 2));
+  console.log("Duyuru apiresponse:", JSON.stringify(apiResponse.data, null, 2));
   return apiResponse.data || [];
 }
 
-//  Tüm duyuruları getir (admin ekranı için)
-export async function fetchAllDuyurular(): Promise<Duyuru[]> {
-  const res = await fetch(`${BASE_URL}/admin`);
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`);
-  }
-  const apiResponse: ApiResponse<Duyuru[]> = await res.json();
-  return apiResponse.data || [];
-}
-
-//  Zamanlanmış duyuruları getir (admin ekranı için)
-export async function fetchScheduledDuyurular(): Promise<Duyuru[]> {
-  const res = await fetch(`${BASE_URL}/admin/scheduled`);
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`);
-  }
-  const apiResponse: ApiResponse<Duyuru[]> = await res.json();
-  return apiResponse.data || [];
-}
-
+// Herkese açık - token gerektirmez
 export async function fetchDuyuruById(id: number): Promise<Duyuru> {
   const res = await fetch(`${BASE_URL}/${id}`);
   if (!res.ok) {
@@ -52,10 +42,14 @@ export async function fetchDuyuruById(id: number): Promise<Duyuru> {
   return apiResponse.data;
 }
 
+// Admin endpoint - token gerektirir
 export async function createDuyuru(d: Partial<Duyuru>): Promise<Duyuru> {
   const res = await fetch(`${BASE_URL}/admin`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders()
+    },
     body: JSON.stringify(d),
   });
   if (!res.ok) {
@@ -65,14 +59,14 @@ export async function createDuyuru(d: Partial<Duyuru>): Promise<Duyuru> {
   return apiResponse.data;
 }
 
-//  YENİ YAKLAŞIM: JSON + File ayrı ayrı (Haber ile tutarlı)
+// Admin endpoint - resim ile duyuru oluşturma - token gerektirir
 export async function createDuyuruWithImage(
   duyuru: Partial<Duyuru>,
   imageFile?: File
 ): Promise<Duyuru> {
   const formData = new FormData();
 
-  // Duyuru verisini tek JSON olarak gönder
+  // Duyuru verisini JSON olarak hazırla
   const duyuruData = {
     konu: duyuru.konu || '',
     icerik: duyuru.icerik || '',
@@ -91,6 +85,9 @@ export async function createDuyuruWithImage(
 
   const res = await fetch(`${BASE_URL}/admin/with-image`, {
     method: "POST",
+    headers: {
+      ...getAuthHeaders() // FormData ile Content-Type otomatik
+    },
     body: formData,
   });
 
@@ -101,10 +98,14 @@ export async function createDuyuruWithImage(
   return apiResponse.data;
 }
 
+// Admin endpoint - duyuru güncelleme - token gerektirir
 export async function updateDuyuru(id: number, d: Partial<Duyuru>): Promise<Duyuru> {
   const res = await fetch(`${BASE_URL}/admin/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders()
+    },
     body: JSON.stringify(d),
   });
   if (!res.ok) {
@@ -114,7 +115,7 @@ export async function updateDuyuru(id: number, d: Partial<Duyuru>): Promise<Duyu
   return apiResponse.data;
 }
 
-// YENİ YAKLAŞIM: JSON + File ayrı ayrı (update)
+// Admin endpoint - resim ile duyuru güncelleme - token gerektirir
 export async function updateDuyuruWithImage(
   id: number,
   duyuru: Partial<Duyuru>,
@@ -122,7 +123,7 @@ export async function updateDuyuruWithImage(
 ): Promise<Duyuru> {
   const formData = new FormData();
 
-  // Duyuru verisini tek JSON olarak gönder
+  // Duyuru verisini JSON olarak hazırla
   const duyuruData = {
     konu: duyuru.konu || '',
     icerik: duyuru.icerik || '',
@@ -141,6 +142,9 @@ export async function updateDuyuruWithImage(
 
   const res = await fetch(`${BASE_URL}/admin/${id}/with-image`, {
     method: "PUT",
+    headers: {
+      ...getAuthHeaders() // FormData ile Content-Type otomatik
+    },
     body: formData,
   });
 
@@ -151,18 +155,26 @@ export async function updateDuyuruWithImage(
   return apiResponse.data;
 }
 
+// Admin endpoint - duyuru silme - token gerektirir
 export async function deleteDuyuru(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/admin/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: {
+      ...getAuthHeaders()
+    }
   });
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
 }
 
-// Aktif duyurular arasında arama (kullanıcı için)
+// Admin endpoint - duyuru arama - token gerektirir
 export async function searchDuyurular(query: string): Promise<Duyuru[]> {
-  const res = await fetch(`${BASE_URL}/search?konu=${encodeURIComponent(query)}`);
+  const res = await fetch(`${BASE_URL}/admin/search?konu=${encodeURIComponent(query)}`, {
+    headers: {
+      ...getAuthHeaders()
+    }
+  });
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
@@ -170,9 +182,13 @@ export async function searchDuyurular(query: string): Promise<Duyuru[]> {
   return apiResponse.data || [];
 }
 
-// Tüm duyurular arasında arama (admin için)
-export async function searchAllDuyurular(query: string): Promise<Duyuru[]> {
-  const res = await fetch(`${BASE_URL}/admin/search?konu=${encodeURIComponent(query)}`);
+// Admin endpoint - aktif duyuruları getir - token gerektirir
+export async function fetchActiveDuyurular(): Promise<Duyuru[]> {
+  const res = await fetch(`${BASE_URL}/admin/active`, {
+    headers: {
+      ...getAuthHeaders()
+    }
+  });
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }

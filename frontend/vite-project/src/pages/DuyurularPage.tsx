@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { Duyuru } from "../models/Duyuru";
-import { fetchDuyurular, searchDuyurular } from "../api/duyuruApi";
+import { fetchAllDuyurular, searchDuyurular } from "../api/duyuruApi";
+import { useWebSocket } from "../hooks/useWebSocket";
 import {
   Card,
   CardMedia,
@@ -65,7 +66,7 @@ export function DuyurularPage() {
         if (searchQuery) {
           data = await searchDuyurular(searchQuery);
         } else {
-          data = await fetchDuyurular();
+          data = await fetchAllDuyurular();
         }
 
         data = data.sort((a, b) => new Date(b.createdTime || 0).getTime() - new Date(a.createdTime || 0).getTime());
@@ -81,6 +82,35 @@ export function DuyurularPage() {
 
     loadDuyurular();
   }, [searchParams]);
+
+  const LoadDuyurularSilent = async () => {
+
+    try {
+      const searchQuery = searchParams.get('q');
+      let data: Duyuru[];
+
+      if (searchQuery) {
+        data = await searchDuyurular(searchQuery);
+      } else {
+        data = await fetchAllDuyurular();
+      }
+
+      data = data.sort((a, b) => new Date(b.createdTime || 0).getTime() - new Date(a.createdTime || 0).getTime());
+      console.log("WebSocket ile Duyurular Güncellendi", data.length);
+      setDuyurular(data);
+    } catch (err) {
+      console.error('Sessiz Duyuru Yükleme Hatası', err);
+    }
+  }
+
+  const handleWebSocketMessage = useCallback(() => {
+    console.log('WebSocket mesajı alındı - Duyurular Güncelleniyor');
+    setTimeout(() => {
+      LoadDuyurularSilent();
+    }, 500);
+  }, []);
+
+  useWebSocket('duyurular', handleWebSocketMessage);
 
   const handleOpen = (duyuru: Duyuru) => {
     setSelected(duyuru);

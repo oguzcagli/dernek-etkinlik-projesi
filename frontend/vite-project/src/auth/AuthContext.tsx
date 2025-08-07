@@ -2,32 +2,35 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
-type Role = "admin" | null;
+type Role = "ADMIN" | "USER" | null;
 
 interface AuthContextType {
     role: Role;
+    token: string | null;
+    username: string | null;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
     isLoading: boolean;
 }
 
-// Admin credentials - production'da backend'den gelir
-const ADMIN_CREDENTIALS = {
-    username: "admin",
-    password: "dernek123"
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [role, setRole] = useState<Role>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     // Sayfa yenilendiğinde auth durumunu koru
     useEffect(() => {
+        const savedToken = localStorage.getItem('dernek_auth_token');
         const savedRole = localStorage.getItem('dernek_auth_role');
-        if (savedRole === 'admin') {
-            setRole('admin');
+        const savedUsername = localStorage.getItem('dernek_auth_username');
+
+        if (savedToken && savedRole && savedUsername) {
+            setToken(savedToken);
+            setRole(savedRole as Role);
+            setUsername(savedUsername);
         }
         setIsLoading(false);
     }, []);
@@ -35,27 +38,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = async (username: string, password: string): Promise<boolean> => {
         setIsLoading(true);
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            setRole('admin');
-            localStorage.setItem('dernek_auth_role', 'admin');
+            if (!response.ok) {
+                setIsLoading(false);
+                return false;
+            }
+
+            const data = await response.json();
+
+            // Backend'den gelen data: { token, username, role, type }
+            setToken(data.token);
+            setRole(data.role); // "ADMIN" veya "USER"
+            setUsername(data.username);
+
+            // localStorage'a kaydet
+            localStorage.setItem('dernek_auth_token', data.token);
+            localStorage.setItem('dernek_auth_role', data.role);
+            localStorage.setItem('dernek_auth_username', data.username);
+
             setIsLoading(false);
             return true;
+        } catch (error) {
+            console.error('Login error:', error);
+            setIsLoading(false);
+            return false;
         }
-
-        setIsLoading(false);
-        return false;
     };
 
     const logout = () => {
         setRole(null);
+        setToken(null);
+        setUsername(null);
+        localStorage.removeItem('dernek_auth_token');
         localStorage.removeItem('dernek_auth_role');
+        localStorage.removeItem('dernek_auth_username');
     };
 
     return (
-        <AuthContext.Provider value={{ role, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ role, token, username, login, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

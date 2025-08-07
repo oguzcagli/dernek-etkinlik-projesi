@@ -12,6 +12,16 @@ interface ApiResponse<T> {
   timestamp: string;
 }
 
+// Token'ı localStorage'dan al ve header oluştur
+const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('dernek_auth_token');
+  if (token) {
+    return { 'Authorization': `Bearer ${token}` };
+  }
+  return {};
+};
+
+// Herkese açık - token gerektirmez
 export async function fetchHaberler(): Promise<Haber[]> {
   const res = await fetch(BASE_URL);
   if (!res.ok) {
@@ -22,6 +32,7 @@ export async function fetchHaberler(): Promise<Haber[]> {
   return apiResponse.data || [];
 }
 
+// Herkese açık - token gerektirmez
 export async function fetchHaberById(id: number): Promise<Haber> {
   const res = await fetch(`${BASE_URL}/${id}`);
   if (!res.ok) {
@@ -31,10 +42,14 @@ export async function fetchHaberById(id: number): Promise<Haber> {
   return apiResponse.data;
 }
 
+// Admin endpoint - token gerektirir
 export async function createHaber(h: Partial<Haber>): Promise<Haber> {
   const res = await fetch(`${BASE_URL}/admin`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders()
+    },
     body: JSON.stringify(h),
   });
   if (!res.ok) {
@@ -44,14 +59,14 @@ export async function createHaber(h: Partial<Haber>): Promise<Haber> {
   return apiResponse.data;
 }
 
-// YENİ YAKLAŞIM: JSON + File ayrı ayrı
+// Admin endpoint - resim ile haber oluşturma - token gerektirir
 export async function createHaberWithImage(
   haber: Partial<Haber>,
   imageFile?: File
 ): Promise<Haber> {
   const formData = new FormData();
 
-  // Haber verisini tek JSON olarak gönder
+  // Haber verisini JSON olarak hazırla
   const haberData = {
     konu: haber.konu || '',
     icerik: haber.icerik || '',
@@ -72,6 +87,9 @@ export async function createHaberWithImage(
 
   const res = await fetch(`${BASE_URL}/admin/with-image`, {
     method: "POST",
+    headers: {
+      ...getAuthHeaders() // FormData ile Content-Type otomatik
+    },
     body: formData,
   });
 
@@ -82,10 +100,14 @@ export async function createHaberWithImage(
   return apiResponse.data;
 }
 
+// Admin endpoint - haber güncelleme - token gerektirir
 export async function updateHaber(id: number, h: Partial<Haber>): Promise<Haber> {
   const res = await fetch(`${BASE_URL}/admin/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders()
+    },
     body: JSON.stringify(h),
   });
   if (!res.ok) {
@@ -95,7 +117,7 @@ export async function updateHaber(id: number, h: Partial<Haber>): Promise<Haber>
   return apiResponse.data;
 }
 
-// YENİ YAKLAŞIM: JSON + File ayrı ayrı (update)
+// Admin endpoint - resim ile haber güncelleme - token gerektirir
 export async function updateHaberWithImage(
   id: number,
   haber: Partial<Haber>,
@@ -103,7 +125,7 @@ export async function updateHaberWithImage(
 ): Promise<Haber> {
   const formData = new FormData();
 
-  // Haber verisini tek JSON olarak gönder
+  // Haber verisini JSON olarak hazırla
   const haberData = {
     konu: haber.konu || '',
     icerik: haber.icerik || '',
@@ -124,6 +146,9 @@ export async function updateHaberWithImage(
 
   const res = await fetch(`${BASE_URL}/admin/${id}/with-image`, {
     method: "PUT",
+    headers: {
+      ...getAuthHeaders() // FormData ile Content-Type otomatik
+    },
     body: formData,
   });
 
@@ -134,17 +159,26 @@ export async function updateHaberWithImage(
   return apiResponse.data;
 }
 
+// Admin endpoint - haber silme - token gerektirir
 export async function deleteHaber(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/admin/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: {
+      ...getAuthHeaders()
+    }
   });
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
 }
 
+// Admin endpoint - haber arama - token gerektirir
 export async function searchHaberler(query: string): Promise<Haber[]> {
-  const res = await fetch(`${BASE_URL}/admin/search?konu=${encodeURIComponent(query)}`);
+  const res = await fetch(`${BASE_URL}/admin/search?konu=${encodeURIComponent(query)}`, {
+    headers: {
+      ...getAuthHeaders()
+    }
+  });
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
