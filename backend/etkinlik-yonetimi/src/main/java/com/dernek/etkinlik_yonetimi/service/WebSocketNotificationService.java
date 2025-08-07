@@ -13,23 +13,38 @@ public class WebSocketNotificationService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     
+
     public void notificationHaberUpdate() {
-        log.info("🔥 HABER WebSocket bildirimi gönderiliyor!");
+
+        log.info(" Haber WebSocket bildirimi gönderiliyor");
+
         try {
+
             messagingTemplate.convertAndSend("/topic/haberler", "refresh");
-            log.info("✅ HABER bildirimi başarıyla gönderildi");
+            log.info(" Hbaer bildirimi başarıyla gönderildi");
         } catch (Exception e) {
-            log.error("❌ HABER bildirimi gönderilemedi: {}", e.getMessage());
+            log.error(" Haber bildirimi gönderilemedi: {}", e.getMessage());
+
+
         }
     }
     
     public void notificationDuyuruUpdate() {
-        log.info("🔥 DUYURU WebSocket bildirimi gönderiliyor!");
+
+        log.info(" Duyuru WebSocket bildirimi gönderiliyor!");
+
         try {
             messagingTemplate.convertAndSend("/topic/duyurular", "refresh");
-            log.info("✅ DUYURU bildirimi başarıyla gönderildi");
+
+            log.info(" Duyuru bildirimi başarıyla gönderildi");
         } catch (Exception e) {
-            log.error("❌ DUYURU bildirimi gönderilemedi: {}", e.getMessage());
+            log.error(" Duyuru bildirimi gönderilemedi: {}", e.getMessage());
+
+
         }
+
     }
+
+
+
 }

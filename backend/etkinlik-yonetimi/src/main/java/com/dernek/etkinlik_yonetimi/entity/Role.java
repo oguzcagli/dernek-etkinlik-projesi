@@ -8,12 +8,14 @@ public enum Role {
     private final String authority;
 
     Role(String authority) {
+
         this.authority = authority;
     }
 
     @Override
     public String toString() {
         return authority;
+        
     }
 
 }
